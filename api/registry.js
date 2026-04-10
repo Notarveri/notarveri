@@ -228,24 +228,34 @@ export default async function handler(req, res) {
 
   // ==================== VERIFY ====================
   if (action === 'verify') {
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-    let { request_hash } = typeof req.body === 'object' ? req.body : JSON.parse(req.body);
-    if (!request_hash) return res.status(400).json({ error: 'Missing request_hash' });
-    const sup = getSupabase();
-    try {
-      const { data, error } = await sup
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  let { request_hash } = typeof req.body === 'object' ? req.body : JSON.parse(req.body);
+  if (!request_hash) return res.status(400).json({ error: 'Missing request_hash' });
+  const sup = getSupabase();
+  try {
+    // First check pending_receipts
+    let { data, error } = await sup
+      .from('pending_receipts')
+      .select('receipt_json')
+      .eq('request_hash', request_hash)
+      .maybeSingle();
+    if (error) throw error;
+    // If not found, check receipts_in_block
+    if (!data) {
+      const { data: data2, error: error2 } = await sup
         .from('receipts_in_block')
         .select('receipt_json')
         .eq('request_hash', request_hash)
         .maybeSingle();
-      if (error) throw error;
-      if (!data) return res.status(404).json({ found: false });
-      return res.status(200).json({ found: true, receipt: data.receipt_json });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
+      if (error2) throw error2;
+      data = data2;
     }
+    if (!data) return res.status(404).json({ found: false });
+    return res.status(200).json({ found: true, receipt: data.receipt_json });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
-
+}
   // ==================== CHAIN ====================
   if (action === 'chain') {
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
