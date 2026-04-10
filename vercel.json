@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/registry?action=flush",
+      "schedule": "* * * * *"
+    }
+  ]
+}
