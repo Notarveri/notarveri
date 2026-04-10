@@ -1,6 +1,7 @@
 import { createHmac } from 'crypto';
 
-const SIGNING_KEY = process.env.SIGNING_KEY || 'my-secret-key';
+const SIGNING_KEY = process.env.SIGNING_KEY;
+if (!SIGNING_KEY) throw new Error('Missing SIGNING_KEY environment variable');
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,7 +24,7 @@ export default async function handler(req, res) {
 
   const payload = `${request_hash}:${response_hash}:${model}:${timestamp}`;
   const expected = createHmac('sha256', SIGNING_KEY).update(payload).digest('hex');
-  const valid = (signature === expected);
+  const valid = signature === expected;
 
   return res.status(200).json({ valid, receipt: valid ? receipt : null });
 }
