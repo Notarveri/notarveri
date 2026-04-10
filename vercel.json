@@ -1,7 +1,23 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "framework": null,
   "buildCommand": null,
   "installCommand": null,
-  "framework": null,
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
   "crons": [
     {
       "path": "/api/registry?action=flush",
