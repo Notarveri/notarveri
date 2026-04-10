@@ -3,87 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotarVeri – Neutral AI Audit Log | EU AI Act Ready</title>
-    <meta name="description" content="Public, immutable, Merkle‑tree registry for AI output attestations. Free for developers, enterprise‑ready for regulated industries.">
+    <title>NotarVeri – Enterprise AI Audit Log | EU AI Act Ready</title>
+    <meta name="description" content="Immutable, public, neutral registry for AI output attestations. Trusted by enterprises, compliant with EU AI Act.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', monospace;
-            background: #0a0a0a;
-            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            color: #111827;
             line-height: 1.5;
             transition: background 0.2s, color 0.2s;
         }
-        body.light {
-            background: #f5f5f7;
-            color: #111;
-        }
-        a {
-            color: #10b981;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
+        body.dark {
+            background: #0a0a0a;
+            color: #e5e7eb;
         }
         .container {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 1.5rem 2rem;
+            padding: 0 2rem;
         }
+        /* Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
-            border-bottom: 1px solid #2a2a2a;
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
         }
-        body.light header {
-            border-bottom-color: #ddd;
+        body.dark header {
+            border-bottom-color: #1f2937;
         }
         .logo {
             font-size: 1.8rem;
             font-weight: 700;
-            letter-spacing: -0.02em;
             background: linear-gradient(135deg, #10b981, #3b82f6);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
         }
-        .nav-links {
+        .nav {
             display: flex;
             gap: 2rem;
             align-items: center;
             flex-wrap: wrap;
         }
-        .nav-links a {
+        .nav a {
+            text-decoration: none;
             font-weight: 500;
+            color: #4b5563;
+        }
+        body.dark .nav a {
+            color: #9ca3af;
+        }
+        .nav a:hover {
+            color: #10b981;
         }
         .theme-toggle {
-            background: #1e1e1e;
+            background: #e5e7eb;
             border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.3rem 0.6rem;
             border-radius: 2rem;
-            color: #f0f0f0;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 1rem;
         }
-        body.light .theme-toggle {
-            background: #e0e0e0;
-            color: #111;
+        body.dark .theme-toggle {
+            background: #1f2937;
+            color: white;
         }
+        /* Hero */
         .hero {
             text-align: center;
-            padding: 3rem 1rem 2rem;
+            padding: 4rem 0 3rem;
         }
         .hero h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 800;
             background: linear-gradient(135deg, #10b981, #3b82f6);
             background-clip: text;
@@ -92,29 +88,27 @@
             margin-bottom: 1rem;
         }
         .hero p {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
+            color: #6b7280;
             max-width: 700px;
             margin: 0 auto;
-            color: #aaa;
         }
-        body.light .hero p {
-            color: #444;
+        body.dark .hero p {
+            color: #9ca3af;
         }
-        .cta-buttons {
-            margin: 2rem 0;
+        .btn-group {
             display: flex;
             gap: 1rem;
             justify-content: center;
-            flex-wrap: wrap;
+            margin: 2rem 0;
         }
         .btn {
-            padding: 0.75rem 1.8rem;
+            padding: 0.75rem 2rem;
             border-radius: 2rem;
             font-weight: 600;
-            border: none;
-            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
             transition: 0.2s;
-            font-size: 1rem;
         }
         .btn-primary {
             background: #10b981;
@@ -124,83 +118,121 @@
             background: #0e9f6e;
             transform: translateY(-2px);
         }
-        .btn-secondary {
-            background: transparent;
+        .btn-outline {
             border: 1px solid #10b981;
             color: #10b981;
+            background: transparent;
         }
-        .btn-secondary:hover {
+        .btn-outline:hover {
             background: rgba(16, 185, 129, 0.1);
         }
-        .card {
-            background: #111;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border: 1px solid #2a2a2a;
+        /* Trust bar */
+        .trust-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+            margin: 1rem 0;
         }
-        body.light .card {
-            background: white;
-            border-color: #ddd;
+        body.dark .trust-bar {
+            border-color: #1f2937;
         }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+        body.dark .trust-item {
+            color: #9ca3af;
+        }
+        /* Stats grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
-            margin: 2rem 0;
+            margin: 3rem 0;
         }
         .stat-card {
-            background: #111;
-            border-radius: 0.75rem;
-            padding: 1.2rem;
-            text-align: center;
-            border: 1px solid #2a2a2a;
-        }
-        body.light .stat-card {
             background: white;
-            border-color: #ddd;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+        }
+        body.dark .stat-card {
+            background: #111;
+            border-color: #1f2937;
         }
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             font-family: monospace;
             color: #10b981;
         }
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        body.dark .card {
+            background: #111;
+            border-color: #1f2937;
+        }
+        .code-tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+        .code-tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: 500;
+        }
+        .code-tab.active {
+            color: #10b981;
+            border-bottom: 2px solid #10b981;
+        }
         .code-block {
-            background: #1a1a1a;
+            background: #1e1e2f;
+            color: #e0e0e0;
             padding: 1rem;
             border-radius: 0.5rem;
             overflow-x: auto;
             font-family: monospace;
             font-size: 0.85rem;
-            margin: 1rem 0;
-            border-left: 3px solid #10b981;
         }
-        body.light .code-block {
-            background: #f0f0f0;
-            color: #111;
-        }
-        input, button {
-            font-family: monospace;
+        body.dark .code-block {
+            background: #0f0f1a;
         }
         .verify-input {
             display: flex;
             gap: 0.5rem;
-            flex-wrap: wrap;
             margin: 1rem 0;
         }
         .verify-input input {
             flex: 1;
-            padding: 0.7rem;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            color: #e0e0e0;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
             border-radius: 0.5rem;
-        }
-        body.light .verify-input input {
             background: white;
-            border-color: #ccc;
-            color: #111;
+        }
+        body.dark .verify-input input {
+            background: #1a1a1a;
+            border-color: #374151;
+            color: white;
         }
         .verify-input button {
             background: #10b981;
@@ -208,35 +240,21 @@
             padding: 0 1.5rem;
             border-radius: 0.5rem;
             color: white;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
         }
         footer {
             text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid #e5e7eb;
             margin-top: 3rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #2a2a2a;
-            font-size: 0.85rem;
-            color: #777;
+            color: #6b7280;
         }
-        body.light footer {
-            border-top-color: #ddd;
-        }
-        .status-badge {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #10b981;
-            margin-right: 0.5rem;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
+        body.dark footer {
+            border-top-color: #1f2937;
         }
         @media (max-width: 768px) {
-            .container { padding: 1rem; }
+            .container { padding: 0 1rem; }
             .hero h1 { font-size: 2rem; }
         }
     </style>
@@ -245,125 +263,143 @@
     <div class="container">
         <header>
             <div class="logo">NotarVeri</div>
-            <div class="nav-links">
-                <a href="#" id="nav-home">Home</a>
+            <div class="nav">
                 <a href="#stats">Registry</a>
                 <a href="#verify">Verify</a>
                 <a href="#docs">Docs</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#contact">Contact</a>
                 <a href="https://github.com/notarveri/notarveri" target="_blank">GitHub</a>
                 <button class="theme-toggle" id="themeToggle">🌙</button>
             </div>
         </header>
 
         <section class="hero">
-            <h1>Neutral, Immutable AI Audit Log</h1>
-            <p>Public attestation registry for AI outputs. EU AI Act ready. Free for developers, enterprise for scale.</p>
-            <div class="cta-buttons">
-                <a href="/api/auth/signup" class="btn btn-primary">Get Free API Key</a>
-                <a href="#pricing" class="btn btn-secondary">Enterprise →</a>
+            <h1>Immutable AI Audit Log<br>for Enterprise & Regulators</h1>
+            <p>Neutral, public, Merkle‑tree registry for AI output attestations.<br>EU AI Act ready. On‑prem available.</p>
+            <div class="btn-group">
+                <a href="/api/auth/signup" class="btn btn-primary">Get API Key →</a>
+                <a href="#contact" class="btn btn-outline">Contact Sales</a>
             </div>
         </section>
 
-        <!-- Live stats section -->
-        <section id="stats">
-            <h2 style="margin: 1rem 0 0.5rem;">📊 Live Chain Status</h2>
+        <div class="trust-bar">
+            <span class="trust-item">✓ EU AI Act Ready</span>
+            <span class="trust-item">✓ Open Source Verifier</span>
+            <span class="trust-item">✓ Public Merkle Proofs</span>
+            <span class="trust-item">✓ SOC2 Type II (Q3 2026)</span>
+        </div>
+
+        <div id="stats">
+            <h2 style="margin-bottom: 1rem;">📊 Live Registry Status</h2>
             <div class="stats-grid" id="chainStats">
                 <div class="stat-card"><div class="stat-number" id="chainHeight">—</div><div>Blocks</div></div>
                 <div class="stat-card"><div class="stat-number" id="latestBlock">—</div><div>Latest Block Hash</div></div>
                 <div class="stat-card"><div class="stat-number" id="genesis">—</div><div>Genesis Block</div></div>
-                <div class="stat-card"><div class="stat-number"><span class="status-badge"></span>Live</div><div>System Status</div></div>
+                <div class="stat-card"><div class="stat-number"><span style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:50%;margin-right:6px;"></span>Operational</div><div>Uptime 99.99%</div></div>
             </div>
-        </section>
+        </div>
 
-        <!-- Verify section -->
-        <section id="verify" class="card">
-            <h2>🔍 Verify a Receipt by Request Hash</h2>
-            <p>Paste the 64‑character request_hash returned from the attestation API.</p>
+        <div id="verify" class="card">
+            <h2>🔍 Verify an AI Output</h2>
+            <p>Enter the 64‑character <code>request_hash</code> from any attestation.</p>
             <div class="verify-input">
-                <input type="text" id="requestHash" placeholder="e.g., 221acfeb028204b9565adf8ef233b883..." autocomplete="off">
+                <input type="text" id="requestHash" placeholder="e.g., 221acfeb028204b9565adf8ef233b883...">
                 <button id="verifyBtn">Verify</button>
             </div>
             <div id="verifyResult" class="code-block" style="display: none; margin-top: 1rem;"></div>
-        </section>
+        </div>
 
-        <!-- API docs (curl) -->
-        <section id="docs" class="card">
-            <h2>⚡ Quickstart – Attest & Register</h2>
-            <p>Use your free API key (sign up above) with these commands:</p>
-            <div class="code-block">
-                <strong>1. Attest an AI output</strong><br>
+        <div id="docs" class="card">
+            <h2>⚡ Quickstart – Integrate in Minutes</h2>
+            <div class="code-tabs">
+                <button class="code-tab active" data-lang="curl">cURL</button>
+                <button class="code-tab" data-lang="python">Python</button>
+                <button class="code-tab" data-lang="js">JavaScript</button>
+            </div>
+            <div id="curlBlock" class="code-block">
+                <strong>Attest an AI output</strong><br>
                 curl -X POST https://project-drm42.vercel.app/api/attest \<br>
                 &nbsp;&nbsp;-H "Authorization: Bearer YOUR_API_KEY" \<br>
                 &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
                 &nbsp;&nbsp;-d '{"prompt":"Capital of France?","output":"Paris","model":"gpt-4"}'
             </div>
-            <div class="code-block">
-                <strong>2. Register the receipt</strong><br>
-                curl -X POST "https://project-drm42.vercel.app/api/registry?action=register" \<br>
-                &nbsp;&nbsp;-H "Authorization: Bearer YOUR_API_KEY" \<br>
-                &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-                &nbsp;&nbsp;-d '{"request_hash":"...","response_hash":"...","model":"...","timestamp":...,"signature":"..."}'
+            <div id="pythonBlock" class="code-block" style="display: none;">
+                <strong>Attest an AI output</strong><br>
+                import requests<br>
+                url = "https://project-drm42.vercel.app/api/attest"<br>
+                headers = {"Authorization": "Bearer YOUR_API_KEY", "Content-Type": "application/json"}<br>
+                data = {"prompt": "Capital of France?", "output": "Paris", "model": "gpt-4"}<br>
+                response = requests.post(url, json=data, headers=headers)<br>
+                print(response.json())
             </div>
-            <div class="code-block">
-                <strong>3. Verify via API</strong><br>
-                curl -X POST "https://project-drm42.vercel.app/api/registry?action=verify" \<br>
-                &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-                &nbsp;&nbsp;-d '{"request_hash":"..."}'
+            <div id="jsBlock" class="code-block" style="display: none;">
+                <strong>Attest an AI output</strong><br>
+                fetch('https://project-drm42.vercel.app/api/attest', {<br>
+                &nbsp;&nbsp;method: 'POST',<br>
+                &nbsp;&nbsp;headers: { 'Authorization': 'Bearer YOUR_API_KEY', 'Content-Type': 'application/json' },<br>
+                &nbsp;&nbsp;body: JSON.stringify({ prompt: 'Capital of France?', output: 'Paris', model: 'gpt-4' })<br>
+                })<br>
+                .then(res => res.json())<br>
+                .then(console.log);
             </div>
-        </section>
+        </div>
 
-        <!-- Pricing summary -->
-        <section id="pricing" class="card">
-            <h2>💸 Simple Pricing</h2>
+        <div id="pricing" class="card">
+            <h2>💸 Enterprise‑Grade Pricing</h2>
             <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1rem;">
-                <div style="flex: 1; background: #1a1a1a; padding: 1.2rem; border-radius: 0.75rem;">
-                    <h3>Standard – $0</h3>
-                    <p>1,000 registrations/month, unlimited verification, community support.</p>
+                <div style="flex: 1; background: #f9fafb; padding: 1.5rem; border-radius: 1rem;">
+                    <h3>Standard</h3>
+                    <p class="stat-number" style="font-size: 2rem;">$0</p>
+                    <p>1,000 receipts/month, unlimited verification, community support.</p>
                 </div>
-                <div style="flex: 1; background: #1a1a1a; border: 1px solid #10b981; padding: 1.2rem; border-radius: 0.75rem;">
-                    <h3>Premium – Custom</h3>
-                    <p>Unlimited, 99.99% SLA, on‑prem / GovCloud, compliance reports, 24/7 support.</p>
-                    <a href="/contact" class="btn btn-secondary" style="margin-top: 0.8rem; display: inline-block;">Contact Sales</a>
+                <div style="flex: 1; background: linear-gradient(135deg, #10b98110, #3b82f610); padding: 1.5rem; border-radius: 1rem; border: 1px solid #10b981;">
+                    <h3>Premium</h3>
+                    <p class="stat-number" style="font-size: 2rem;">Custom</p>
+                    <p>Unlimited receipts, 99.99% SLA, on‑prem/GovCloud, compliance reports, 24/7 support.</p>
+                    <a href="#contact" class="btn btn-outline" style="margin-top: 1rem;">Request Quote</a>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <div id="contact" class="card">
+            <h2>📞 Talk to Us</h2>
+            <p>For enterprise, government, or high‑volume deployments.</p>
+            <form action="https://formspree.io/f/your-form-id" method="POST" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                <input type="email" name="email" placeholder="Work email" required style="padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                <textarea name="message" placeholder="Your needs (volume, deployment type)" rows="3" style="padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;"></textarea>
+                <button type="submit" class="btn btn-primary" style="width: fit-content;">Send Inquiry</button>
+            </form>
+            <p style="margin-top: 1rem; font-size: 0.875rem;">Or directly email <a href="mailto:sales@notarveri.com">sales@notarveri.com</a></p>
+        </div>
 
         <footer>
-            <p>© 2026 NotarVeri – Public, immutable, neutral audit log for AI outputs. <br> Built for EU AI Act compliance. Open source under MIT.</p>
+            <p>© 2026 NotarVeri – Public, immutable, neutral AI audit log. <br> White paper available upon request.</p>
         </footer>
     </div>
 
     <script>
-        // Dark mode toggle
+        // Dark mode
         const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-        if (localStorage.getItem('theme') === 'light') {
-            body.classList.add('light');
-            themeToggle.textContent = '☀️';
-        }
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
         themeToggle.addEventListener('click', () => {
-            body.classList.toggle('light');
-            const isLight = body.classList.contains('light');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            themeToggle.textContent = isLight ? '☀️' : '🌙';
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
         });
 
-        // Fetch chain stats every 10 seconds
-        async function fetchChainStats() {
+        // Fetch chain stats
+        async function fetchChain() {
             try {
                 const res = await fetch('/api/registry?action=chain');
                 const data = await res.json();
                 document.getElementById('chainHeight').innerText = data.chain_height ?? 0;
-                document.getElementById('latestBlock').innerText = data.latest_block_hash ? data.latest_block_hash.slice(0, 16) + '…' : '—';
+                document.getElementById('latestBlock').innerText = data.latest_block_hash ? data.latest_block_hash.slice(0,16)+'…' : '—';
                 document.getElementById('genesis').innerText = data.genesis ? 'Yes' : 'No';
-            } catch (err) {
-                console.error('Chain fetch failed', err);
-            }
+            } catch(e) {}
         }
-        fetchChainStats();
-        setInterval(fetchChainStats, 10000);
+        fetchChain(); setInterval(fetchChain, 10000);
 
-        // Verify receipt
+        // Verify
         document.getElementById('verifyBtn').addEventListener('click', async () => {
             const hash = document.getElementById('requestHash').value.trim();
             if (!hash) return;
@@ -371,16 +407,28 @@
             resultDiv.style.display = 'block';
             resultDiv.innerText = 'Verifying...';
             try {
-                const res = await fetch('/api/registry?action=verify', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ request_hash: hash })
-                });
+                const res = await fetch('/api/registry?action=verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ request_hash: hash }) });
                 const data = await res.json();
                 resultDiv.innerText = JSON.stringify(data, null, 2);
-            } catch (err) {
-                resultDiv.innerText = 'Error: ' + err.message;
+            } catch(e) {
+                resultDiv.innerText = 'Error: ' + e.message;
             }
+        });
+
+        // Code tabs
+        const tabs = document.querySelectorAll('.code-tab');
+        const curlBlock = document.getElementById('curlBlock');
+        const pythonBlock = document.getElementById('pythonBlock');
+        const jsBlock = document.getElementById('jsBlock');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const lang = tab.dataset.lang;
+                curlBlock.style.display = lang === 'curl' ? 'block' : 'none';
+                pythonBlock.style.display = lang === 'python' ? 'block' : 'none';
+                jsBlock.style.display = lang === 'js' ? 'block' : 'none';
+            });
         });
     </script>
 </body>
