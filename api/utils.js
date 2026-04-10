@@ -1,9 +1,10 @@
-// NotarVeri Production Utilities – Defense‑Grade (No Top‑Level Crashing)
+// NotarVeri Production Utilities – Defense‑Grade
+// Fixed: crypto.subtle replaced with Node.js crypto.createHash
 import { createClient } from '@supabase/supabase-js';
-import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
+import { createHmac, randomBytes, timingSafeEqual, createHash } from 'crypto';
 
 // ============================================================
-// Environment variable access (with safe fallback – no process.exit)
+// Environment variable access (safe, no process.exit)
 // ============================================================
 let _signingKey = null;
 let _supabaseUrl = null;
@@ -28,7 +29,7 @@ export function getApiKey() {
 }
 
 // ============================================================
-// Safe timing‑safe comparison (works with any length)
+// Safe timing‑safe comparison
 // ============================================================
 export function safeTimingCompare(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string') return false;
@@ -61,15 +62,11 @@ export function getSupabase() {
 }
 
 // ============================================================
-// Cryptographic Helpers
+// Cryptographic Helpers (Node.js native)
 // ============================================================
 export async function sha256(message) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+  // FIXED: use Node.js crypto instead of Web crypto.subtle
+  return createHash('sha256').update(message).digest('hex');
 }
 
 export function hmacSign(payload, key) {
