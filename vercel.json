@@ -1,7 +1,7 @@
 {
-  "buildCommand": "next build",
-  "installCommand": "npm install",
-  "framework": "nextjs",
+  "buildCommand": null,
+  "installCommand": null,
+  "framework": null,
   "crons": [
     {
       "path": "/api/registry?action=flush",
