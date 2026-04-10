@@ -1,10 +1,7 @@
-import { isEnvironmentReady } from './_utils.js';
-
 export default function handler(req, res) {
-  const ready = isEnvironmentReady();
   res.status(200).json({ 
-    status: ready ? 'healthy' : 'misconfigured', 
+    status: "healthy", 
     timestamp: Date.now(),
-    env_ready: ready
+    env_ready: !!(process.env.SIGNING_KEY && process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY && process.env.API_KEY)
   });
 }
