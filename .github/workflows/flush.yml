@@ -1,0 +1,15 @@
+name: Flush Pending Receipts (every minute)
+
+on:
+  schedule:
+    - cron: '* * * * *'
+  workflow_dispatch:
+
+jobs:
+  flush:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call NotarVeri flush endpoint
+        run: |
+          curl -X GET "https://project-drm42.vercel.app/api/registry?action=flush" \
+               -H "Authorization: Bearer ${{ secrets.FLUSH_SECRET }}"
