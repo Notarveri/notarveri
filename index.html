@@ -6,7 +6,12 @@
   <title>NotarVeri – Neutral AI Audit Log | EU AI Act Ready</title>
   <meta name="description" content="Public, immutable, Merkle‑tree registry for AI output attestations. Free for developers, enterprise‑ready for regulated industries.">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', monospace;
       background: #0a0a0a;
@@ -14,17 +19,28 @@
       line-height: 1.5;
       transition: background 0.2s, color 0.2s;
     }
+
     body.light {
       background: #f5f5f7;
       color: #111;
     }
-    a { color: #10b981; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+
+    a {
+      color: #10b981;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
     .container {
       max-width: 1280px;
       margin: 0 auto;
       padding: 1.5rem 2rem;
     }
+
+    /* Header */
     header {
       display: flex;
       justify-content: space-between;
@@ -35,23 +51,31 @@
       padding-bottom: 1rem;
       margin-bottom: 2rem;
     }
-    body.light header { border-bottom-color: #ddd; }
+
+    body.light header {
+      border-bottom-color: #ddd;
+    }
+
     .logo {
       font-size: 1.8rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
       background: linear-gradient(135deg, #10b981, #3b82f6);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
     }
-    .nav-links {
+
+    .nav {
       display: flex;
       gap: 2rem;
       align-items: center;
       flex-wrap: wrap;
     }
-    .nav-links a { font-weight: 500; }
+
+    .nav a {
+      font-weight: 500;
+    }
+
     .theme-toggle {
       background: #1e1e1e;
       border: none;
@@ -61,14 +85,18 @@
       border-radius: 2rem;
       color: #f0f0f0;
     }
+
     body.light .theme-toggle {
       background: #e0e0e0;
       color: #111;
     }
+
+    /* Hero */
     .hero {
       text-align: center;
       padding: 3rem 1rem 2rem;
     }
+
     .hero h1 {
       font-size: 3rem;
       font-weight: 800;
@@ -78,13 +106,18 @@
       color: transparent;
       margin-bottom: 1rem;
     }
+
     .hero p {
       font-size: 1.2rem;
       max-width: 700px;
       margin: 0 auto;
       color: #aaa;
     }
-    body.light .hero p { color: #444; }
+
+    body.light .hero p {
+      color: #444;
+    }
+
     .cta-buttons {
       margin: 2rem 0;
       display: flex;
@@ -92,6 +125,7 @@
       justify-content: center;
       flex-wrap: wrap;
     }
+
     .btn {
       padding: 0.75rem 1.8rem;
       border-radius: 2rem;
@@ -100,43 +134,29 @@
       cursor: pointer;
       transition: 0.2s;
       font-size: 1rem;
-      display: inline-block;
-      text-decoration: none;
     }
+
     .btn-primary {
       background: #10b981;
       color: white;
     }
-    .btn-primary:hover { background: #0e9f6e; transform: translateY(-2px); }
+
+    .btn-primary:hover {
+      background: #0e9f6e;
+      transform: translateY(-2px);
+    }
+
     .btn-secondary {
       background: transparent;
       border: 1px solid #10b981;
       color: #10b981;
     }
-    .btn-secondary:hover { background: rgba(16, 185, 129, 0.1); }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin: 2rem 0;
+
+    .btn-secondary:hover {
+      background: rgba(16, 185, 129, 0.1);
     }
-    .stat-card {
-      background: #111;
-      border-radius: 0.75rem;
-      padding: 1.2rem;
-      text-align: center;
-      border: 1px solid #2a2a2a;
-    }
-    body.light .stat-card {
-      background: white;
-      border-color: #ddd;
-    }
-    .stat-number {
-      font-size: 2rem;
-      font-weight: 700;
-      font-family: monospace;
-      color: #10b981;
-    }
+
+    /* Cards */
     .card {
       background: #111;
       border-radius: 1rem;
@@ -144,10 +164,71 @@
       margin: 1.5rem 0;
       border: 1px solid #2a2a2a;
     }
+
     body.light .card {
       background: white;
       border-color: #ddd;
     }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background: #111;
+      border-radius: 0.75rem;
+      padding: 1.2rem;
+      text-align: center;
+      border: 1px solid #2a2a2a;
+    }
+
+    body.light .stat-card {
+      background: white;
+      border-color: #ddd;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: monospace;
+      color: #10b981;
+    }
+
+    .verify-input {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .verify-input input {
+      flex: 1;
+      padding: 0.7rem;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #e0e0e0;
+      border-radius: 0.5rem;
+    }
+
+    body.light .verify-input input {
+      background: white;
+      border-color: #ccc;
+      color: #111;
+    }
+
+    .verify-input button {
+      background: #10b981;
+      border: none;
+      padding: 0 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     .code-block {
       background: #1a1a1a;
       padding: 1rem;
@@ -158,38 +239,64 @@
       margin: 1rem 0;
       border-left: 3px solid #10b981;
     }
+
     body.light .code-block {
       background: #f0f0f0;
       color: #111;
     }
-    .verify-input {
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .feature-card {
+      background: #111;
+      border-radius: 0.75rem;
+      padding: 1.2rem;
+      border: 1px solid #2a2a2a;
+    }
+
+    body.light .feature-card {
+      background: white;
+      border-color: #ddd;
+    }
+
+    .pricing-grid {
       display: flex;
-      gap: 0.5rem;
+      gap: 2rem;
       flex-wrap: wrap;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+
+    .pricing-card {
+      flex: 1;
+      min-width: 250px;
+      background: #111;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      border: 1px solid #2a2a2a;
+    }
+
+    body.light .pricing-card {
+      background: white;
+      border-color: #ddd;
+    }
+
+    .pricing-card.highlight {
+      border: 2px solid #10b981;
+    }
+
+    .price {
+      font-size: 2rem;
+      font-weight: bold;
       margin: 1rem 0;
     }
-    .verify-input input {
-      flex: 1;
-      padding: 0.7rem;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      color: #e0e0e0;
-      border-radius: 0.5rem;
-    }
-    body.light .verify-input input {
-      background: white;
-      border-color: #ccc;
-      color: #111;
-    }
-    .verify-input button {
-      background: #10b981;
-      border: none;
-      padding: 0 1.5rem;
-      border-radius: 0.5rem;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
+
     footer {
       text-align: center;
       margin-top: 3rem;
@@ -198,23 +305,18 @@
       font-size: 0.85rem;
       color: #777;
     }
-    body.light footer { border-top-color: #ddd; }
-    .status-badge {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #10b981;
-      margin-right: 0.5rem;
-      animation: pulse 2s infinite;
+
+    body.light footer {
+      border-top-color: #ddd;
     }
-    @keyframes pulse {
-      0% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
+
     @media (max-width: 768px) {
-      .container { padding: 1rem; }
-      .hero h1 { font-size: 2rem; }
+      .container {
+        padding: 1rem;
+      }
+      .hero h1 {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
@@ -222,10 +324,12 @@
   <div class="container">
     <header>
       <div class="logo">NotarVeri</div>
-      <div class="nav-links">
+      <div class="nav">
         <a href="#stats">Registry</a>
         <a href="#verify">Verify</a>
-        <a href="#docs">Docs</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="/api/docs" target="_blank">API Docs</a>
         <a href="https://github.com/notarveri/notarveri" target="_blank">GitHub</a>
         <button class="theme-toggle" id="themeToggle">🌙</button>
       </div>
@@ -235,53 +339,62 @@
       <h1>Neutral, Immutable AI Audit Log</h1>
       <p>Public attestation registry for AI outputs. EU AI Act ready. Free for developers, enterprise for scale.</p>
       <div class="cta-buttons">
-        <a href="mailto:notarveri@proton.me?subject=API%20Key%20Request" class="btn btn-primary">Request API Key →</a>
+        <a href="mailto:notarveri@proton.me?subject=API%20Key%20Request" class="btn btn-primary">Get Free API Key</a>
         <a href="mailto:notarveri@proton.me?subject=Enterprise%20Inquiry" class="btn btn-secondary">Enterprise →</a>
       </div>
     </section>
 
+    <!-- Live chain stats -->
     <section id="stats">
-      <h2 style="margin: 1rem 0 0.5rem;">📊 Live Chain Status</h2>
+      <h2 style="margin: 1rem 0 0.5rem;">📊 Live Registry Status</h2>
       <div class="stats-grid" id="chainStats">
         <div class="stat-card"><div class="stat-number" id="chainHeight">—</div><div>Blocks</div></div>
         <div class="stat-card"><div class="stat-number" id="latestBlock">—</div><div>Latest Block Hash</div></div>
         <div class="stat-card"><div class="stat-number" id="genesis">—</div><div>Genesis Block</div></div>
-        <div class="stat-card"><div class="stat-number"><span class="status-badge"></span>Live</div><div>System Status</div></div>
+        <div class="stat-card"><div class="stat-number"><span id="statusLight" style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:50%;margin-right:6px;"></span>Live</div><div>System Status</div></div>
       </div>
     </section>
 
+    <!-- Verification tool -->
     <section id="verify" class="card">
       <h2>🔍 Verify a Receipt by Request Hash</h2>
       <p>Paste the 64‑character request_hash returned from the attestation API.</p>
       <div class="verify-input">
-        <input type="text" id="requestHash" placeholder="e.g., 221acfeb028204b9565adf8ef233b883...">
+        <input type="text" id="requestHash" placeholder="e.g., 221acfeb028204b9565adf8ef233b883..." autocomplete="off">
         <button id="verifyBtn">Verify</button>
       </div>
       <div id="verifyResult" class="code-block" style="display: none; margin-top: 1rem;"></div>
     </section>
 
-    <section id="docs" class="card">
-      <h2>⚡ Quickstart – Attest & Register</h2>
-      <p>Use your free API key (request above) with these commands:</p>
-      <div class="code-block">
-        <strong>1. Attest an AI output</strong><br>
-        curl -X POST https://project-drm42.vercel.app/api/attest \<br>
-        &nbsp;&nbsp;-H "Authorization: Bearer YOUR_API_KEY" \<br>
-        &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-        &nbsp;&nbsp;-d '{"prompt":"Capital of France?","output":"Paris","model":"gpt-4"}'
+    <!-- Features -->
+    <section id="features">
+      <h2>✨ Enterprise‑Grade Features</h2>
+      <div class="features-grid">
+        <div class="feature-card"><strong>🔒 Cryptographic Attestation</strong><br>SHA‑256 hashing + HMAC signature for each output.</div>
+        <div class="feature-card"><strong>🌲 Merkle Tree Audit Log</strong><br>Receipts batched into verifiable, immutable blocks.</div>
+        <div class="feature-card"><strong>⚖️ Neutral & Open Source</strong><br>No vendor lock‑in; full code transparency.</div>
+        <div class="feature-card"><strong>📜 EU AI Act Ready</strong><br>Built for Article 12 record‑keeping requirements.</div>
+        <div class="feature-card"><strong>🌐 Cross‑Provider</strong><br>Works with any AI model – OpenAI, Anthropic, Google, open source.</div>
+        <div class="feature-card"><strong>🏢 On‑Prem Deployment</strong><br>Available for enterprises and government.</div>
       </div>
-      <div class="code-block">
-        <strong>2. Register the receipt</strong><br>
-        curl -X POST "https://project-drm42.vercel.app/api/registry?action=register" \<br>
-        &nbsp;&nbsp;-H "Authorization: Bearer YOUR_API_KEY" \<br>
-        &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-        &nbsp;&nbsp;-d '{"request_hash":"...","response_hash":"...","model":"...","timestamp":...,"signature":"..."}'
-      </div>
-      <div class="code-block">
-        <strong>3. Verify via API</strong><br>
-        curl -X POST "https://project-drm42.vercel.app/api/registry?action=verify" \<br>
-        &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-        &nbsp;&nbsp;-d '{"request_hash":"..."}'
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing">
+      <h2>💸 Simple, Transparent Pricing</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Standard</h3>
+          <div class="price">$0</div>
+          <p>1,000 receipts/month<br>Unlimited verification<br>Community support</p>
+          <a href="mailto:notarveri@proton.me?subject=API%20Key%20Request" class="btn btn-secondary" style="margin-top: 1rem; display: inline-block;">Get API Key</a>
+        </div>
+        <div class="pricing-card highlight">
+          <h3>Premium</h3>
+          <div class="price">Custom</div>
+          <p>Unlimited receipts<br>99.99% SLA<br>Compliance reports (PDF)<br>On‑prem / GovCloud</p>
+          <a href="mailto:notarveri@proton.me?subject=Enterprise%20Inquiry" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Contact Sales</a>
+        </div>
       </div>
     </section>
 
