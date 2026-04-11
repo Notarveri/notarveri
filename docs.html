@@ -3,45 +3,303 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NotarVeri API Reference</title>
+  <title>NotarVeri API Reference – Enterprise Grade</title>
+  <link rel="icon" type="image/png" href="https://vercel.com/favicon.ico">
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+      transition: background 0.2s, color 0.2s;
+    }
+    body.dark {
       background: #0a0a0a;
+      color: #e5e7eb;
     }
     .topbar {
-      background: #111;
-      padding: 10px 20px;
-      color: #10b981;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 2rem;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    body.dark .topbar {
+      background: #111827;
+      border-bottom-color: #1f2937;
+    }
+    .logo {
       font-size: 1.5rem;
-      font-weight: bold;
-      border-bottom: 1px solid #1f2937;
+      font-weight: 700;
+      background: linear-gradient(135deg, #10b981, #3b82f6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .btn-icon {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 2rem;
+      transition: 0.2s;
+    }
+    .btn-icon:hover {
+      background: rgba(0,0,0,0.05);
+    }
+    body.dark .btn-icon:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .api-key-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1rem;
+      width: 280px;
+      z-index: 1000;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.02);
+      font-size: 0.875rem;
+    }
+    body.dark .api-key-panel {
+      background: #1f2937;
+      border-color: #374151;
+    }
+    .api-key-panel .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+    }
+    .api-key-panel h4 {
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+    .api-key-panel input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      background: #ffffff;
+      margin-bottom: 0.75rem;
+    }
+    body.dark .api-key-panel input {
+      background: #0a0a0a;
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+    .api-key-panel button {
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      margin-right: 0.5rem;
+    }
+    .api-key-panel button.clear {
+      background: #6b7280;
+    }
+    .api-key-panel button.clear:hover {
+      background: #4b5563;
+    }
+    /* Swagger UI overrides */
+    .swagger-ui {
+      padding: 1rem 2rem;
+    }
+    .swagger-ui .info .title {
+      color: #1f2937 !important;
+    }
+    body.dark .swagger-ui .info .title {
+      color: #e5e7eb !important;
+    }
+    .swagger-ui .info .description {
+      color: #4b5563 !important;
+    }
+    body.dark .swagger-ui .info .description {
+      color: #9ca3af !important;
+    }
+    .swagger-ui .opblock-tag {
+      color: #1f2937 !important;
+    }
+    body.dark .swagger-ui .opblock-tag {
+      color: #e5e7eb !important;
+    }
+    .swagger-ui .opblock .opblock-summary-method {
+      background: #10b981 !important;
+    }
+    .swagger-ui .btn.authorize {
+      border-color: #10b981 !important;
+      color: #10b981 !important;
+    }
+    .swagger-ui section.models {
+      background: #f9fafb !important;
+    }
+    body.dark .swagger-ui section.models {
+      background: #111827 !important;
     }
   </style>
 </head>
 <body>
-  <div class="topbar">NotarVeri Registry – API Reference</div>
+  <div class="topbar">
+    <div class="logo">NotarVeri Registry</div>
+    <div class="controls">
+      <button id="themeToggle" class="btn-icon" title="Toggle dark/light mode">🌙</button>
+      <button id="downloadSpec" class="btn-icon" title="Download OpenAPI spec">📥</button>
+    </div>
+  </div>
   <div id="swagger-ui"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
   <script>
+    // OpenAPI specification (embedded)
     const spec = {
       openapi: '3.0.0',
-      info: { title: 'NotarVeri API', version: '1.0.0' },
-      servers: [{ url: 'https://project-drm42.vercel.app' }],
+      info: {
+        title: 'NotarVeri Registry API',
+        description: 'Public, immutable, Merkle‑tree‑based audit log for AI outputs. Compliant with EU AI Act Article 12.',
+        version: '2.0.0',
+        contact: { name: 'Notar', email: 'notarveri@proton.me' }
+      },
+      servers: [{ url: 'https://project-drm42.vercel.app', description: 'Production server' }],
+      components: {
+        securitySchemes: {
+          ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'Authorization', description: 'Bearer your-api-key-here' }
+        }
+      },
+      security: [{ ApiKeyAuth: [] }],
       paths: {
-        '/api/attest': { post: { summary: 'Attest an AI output' } },
-        '/api/registry': { get: { summary: 'Chain info' }, post: { summary: 'Register, verify, proof' } },
-        '/api/health': { get: { summary: 'Health check' } }
+        '/api/attest': {
+          post: {
+            summary: 'Attest an AI output',
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['prompt', 'output', 'model'],
+                    properties: {
+                      prompt: { type: 'string', description: 'Input prompt' },
+                      output: { type: 'string', description: 'AI generated output' },
+                      model: { type: 'string', description: 'Model name' }
+                    }
+                  }
+                }
+              }
+            },
+            responses: { 200: { description: 'Receipt created' } }
+          }
+        },
+        '/api/registry': {
+          get: {
+            summary: 'Get chain info',
+            parameters: [{ name: 'action', in: 'query', required: true, schema: { type: 'string', enum: ['chain'] } }],
+            responses: { 200: { description: 'Chain information' } }
+          },
+          post: {
+            summary: 'Registry actions (register, verify, proof)',
+            parameters: [{ name: 'action', in: 'query', required: true, schema: { type: 'string', enum: ['register', 'verify', 'proof'] } }],
+            responses: { 200: { description: 'Result' } }
+          }
+        },
+        '/api/health': {
+          get: { responses: { 200: { description: 'OK' } } }
+        }
       }
     };
-    SwaggerUIBundle({
+
+    // Theme management
+    const themeToggle = document.getElementById('themeToggle');
+    const setTheme = (isDark) => {
+      if (isDark) {
+        document.body.classList.add('dark');
+        themeToggle.textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark');
+        themeToggle.textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+      }
+    };
+    if (localStorage.getItem('theme') === 'dark') setTheme(true);
+    themeToggle.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+
+    // Download OpenAPI spec
+    document.getElementById('downloadSpec').addEventListener('click', () => {
+      const dataStr = JSON.stringify(spec, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'notarveri-openapi.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Initialize Swagger UI
+    const ui = SwaggerUIBundle({
       spec: spec,
       dom_id: '#swagger-ui',
-      presets: [SwaggerUIBundle.presets.apis],
-      layout: 'BaseLayout'
+      presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+      layout: 'BaseLayout',
+      deepLinking: true,
+      tryItOutEnabled: true,
+      requestInterceptor: (req) => {
+        const key = localStorage.getItem('notarveri_api_key');
+        if (key) req.headers['Authorization'] = `Bearer ${key}`;
+        return req;
+      }
     });
+
+    // API key panel (closable, with save/clear)
+    const addApiKeyPanel = () => {
+      const existing = document.querySelector('.api-key-panel');
+      if (existing) existing.remove();
+      const panel = document.createElement('div');
+      panel.className = 'api-key-panel';
+      panel.innerHTML = `
+        <button class="close-btn" id="closeKeyPanel">&times;</button>
+        <h4>🔑 API Key</h4>
+        <input type="password" id="apiKeyInput" placeholder="Your API key (Bearer token)" value="${localStorage.getItem('notarveri_api_key') || ''}">
+        <button id="saveKey">Save</button>
+        <button id="clearKey" class="clear">Clear</button>
+      `;
+      document.body.appendChild(panel);
+      document.getElementById('closeKeyPanel').addEventListener('click', () => panel.remove());
+      document.getElementById('saveKey').addEventListener('click', () => {
+        const key = document.getElementById('apiKeyInput').value;
+        localStorage.setItem('notarveri_api_key', key);
+        alert('API key saved. Try an endpoint.');
+      });
+      document.getElementById('clearKey').addEventListener('click', () => {
+        localStorage.removeItem('notarveri_api_key');
+        document.getElementById('apiKeyInput').value = '';
+        alert('API key cleared.');
+      });
+    };
+    setTimeout(addApiKeyPanel, 500);
   </script>
 </body>
 </html>
