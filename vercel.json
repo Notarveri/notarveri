@@ -1,8 +1,4 @@
 {
-  "crons": [
-    {
-      "path": "/api/registry?action=flush",
-      "schedule": "* * * * *"
-    }
-  ]
+  "cleanUrls": true,
+  "trailingSlash": false
 }
