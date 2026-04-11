@@ -110,16 +110,19 @@ async function addPendingReceipt(receiptHash, receiptJson, requestHash, timestam
   if (error) throw new Error(`Pending insert failed: ${error.message}`);
 }
 
-async function flushPending() {
+async function flushPending(limit = 100) {
   const sup = getSupabase();
-  // Fetch all pending receipts ordered by id
+
+  // Fetch pending receipts
   const { data: pending, error: fetchErr } = await sup
     .from('pending_receipts')
     .select('*')
-    .order('id', { ascending: true });
+    .order('id', { ascending: true })
+    .limit(limit);
   if (fetchErr) throw new Error(`Fetch pending failed: ${fetchErr.message}`);
   if (!pending.length) return null;
 
+  // Prepare receipts
   const receipts = pending.map(p => ({
     hash: p.receipt_hash,
     json: p.receipt_json,
@@ -136,7 +139,7 @@ async function flushPending() {
   const blockPayload = `${prevBlockHash}:${merkleRootHash}:${timestampStart}:${timestampEnd}`;
   const blockHash = createHash('sha256').update(blockPayload).digest('hex');
 
-  // Insert block
+  // Insert block (without solana_tx initially)
   const { data: blockData, error: blockErr } = await sup
     .from('blocks')
     .insert([{
@@ -146,7 +149,8 @@ async function flushPending() {
       timestamp_start: timestampStart,
       timestamp_end: timestampEnd,
       receipt_count: receipts.length,
-      block_hash: blockHash
+      block_hash: blockHash,
+      solana_tx: null
     }])
     .select('id');
   if (blockErr) throw new Error(`Block insert failed: ${blockErr.message}`);
@@ -170,7 +174,50 @@ async function flushPending() {
   const { error: delErr } = await sup.from('pending_receipts').delete().neq('id', 0);
   if (delErr) throw new Error(`Delete pending failed: ${delErr.message}`);
 
-  return { blockHeight, blockHash, merkleRoot: merkleRootHash, count: receipts.length };
+  // ========== SOLANA ANCHORING (optional, best effort) ==========
+  let solanaTx = null;
+  if (process.env.SOLANA_ANCHOR_ENABLED === 'true') {
+    try {
+      const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com');
+      const privateKeyBase58 = process.env.SOLANA_PRIVATE_KEY;
+      if (!privateKeyBase58) throw new Error('Missing SOLANA_PRIVATE_KEY');
+      // Convert base58 private key to Uint8Array (requires bs58 library – we'll use Buffer? Actually @solana/web3.js includes bs58)
+      // We'll add bs58 as a dependency: `npm install bs58`
+      // But to avoid extra dep, we can use the built-in: Keypair.fromSecretKey(bs58.decode(privateKeyBase58))
+      // We'll assume you have `bs58` installed. If not, add it.
+      const bs58 = await import('bs58');
+      const secretKey = bs58.decode(privateKeyBase58);
+      const payer = Keypair.fromSecretKey(secretKey);
+      
+      // Create a memo instruction (simple text memo with block hash)
+      const memoProgram = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
+      const memo = `NotarVeri block #${blockHeight}: ${blockHash}`;
+      const instruction = new Transaction().add({
+        programId: memoProgram,
+        keys: [],
+        data: Buffer.from(memo, 'utf8')
+      });
+      
+      const signature = await connection.sendTransaction(instruction, [payer]);
+      // Confirm transaction (optional, can be async)
+      await connection.confirmTransaction(signature);
+      solanaTx = signature;
+    } catch (err) {
+      console.error('Solana anchoring failed:', err);
+      // Do not throw – block is still valid
+    }
+  }
+
+  // Update block with solana_tx if we have it
+  if (solanaTx) {
+    const { error: updateErr } = await sup
+      .from('blocks')
+      .update({ solana_tx: solanaTx })
+      .eq('id', blockId);
+    if (updateErr) console.error('Failed to update solana_tx:', updateErr);
+  }
+
+  return { blockHeight, blockHash, merkleRoot: merkleRootHash, count: receipts.length, solanaTx };
 }
 
 // ============================================================
