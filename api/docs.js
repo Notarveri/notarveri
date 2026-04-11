@@ -1,5 +1,4 @@
-// api/docs.js – Swagger UI with dark/light mode, API key management, and closable panel
-
+// api/docs.js – Swagger UI with dark/light mode, API key management, closable panel
 export default async function handler(req, res) {
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -74,7 +73,6 @@ export default async function handler(req, res) {
       background: var(--secondary-bg) !important;
       border-color: var(--border-color) !important;
     }
-    /* Floating panel */
     .api-key-panel {
       position: fixed;
       bottom: 20px;
@@ -127,14 +125,13 @@ export default async function handler(req, res) {
     <div class="logo">NotarVeri Registry</div>
     <div>
       <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
-      <a href="/api/openapi" download="notarveri-openapi.json" style="margin-left: 1rem; color: var(--primary-color);">📥 Download OpenAPI Spec</a>
+      <a href="/api/openapi.json" download="notarveri-openapi.json" style="margin-left: 1rem; color: var(--primary-color);">📥 Download OpenAPI Spec</a>
     </div>
   </div>
   <div id="swagger-ui"></div>
   <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
   <script>
-    // Theme management
     const themeToggle = document.getElementById('themeToggle');
     const setTheme = (isDark) => {
       if (isDark) {
@@ -154,9 +151,8 @@ export default async function handler(req, res) {
       setTheme(isDark);
     });
 
-    // API key interceptor
     window.ui = SwaggerUIBundle({
-      url: '/api/openapi',
+      url: '/api/openapi.json',
       dom_id: '#swagger-ui',
       presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
       layout: 'BaseLayout',
@@ -179,7 +175,6 @@ export default async function handler(req, res) {
       }
     });
 
-    // Add closable API key panel
     const addApiKeyPanel = () => {
       const panel = document.createElement('div');
       panel.className = 'api-key-panel';
@@ -191,7 +186,6 @@ export default async function handler(req, res) {
         <button id="clearApiKey" class="clear-btn">Clear</button>
       \`;
       document.body.appendChild(panel);
-
       document.querySelector('.close-panel').addEventListener('click', () => {
         panel.remove();
       });
