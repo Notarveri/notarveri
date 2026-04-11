@@ -169,28 +169,38 @@
             border-bottom: 1px solid #e5e7eb;
             margin-bottom: 1rem;
         }
+        body.dark .code-tabs {
+            border-bottom-color: #374151;
+        }
         .code-tab {
             padding: 0.5rem 1rem;
             cursor: pointer;
             background: none;
             border: none;
             font-weight: 500;
+            color: #4b5563;
+        }
+        body.dark .code-tab {
+            color: #9ca3af;
         }
         .code-tab.active {
             color: #10b981;
             border-bottom: 2px solid #10b981;
         }
         .code-block {
-            background: #1e1e2f;
-            color: #e0e0e0;
+            background: #f3f4f6;
+            color: #1f2937;
             padding: 1rem;
             border-radius: 0.5rem;
             overflow-x: auto;
             font-family: monospace;
             font-size: 0.85rem;
+            border: 1px solid #e5e7eb;
         }
         body.dark .code-block {
-            background: #0f0f1a;
+            background: #1e1e2f;
+            color: #e0e0e0;
+            border-color: #2d3748;
         }
         .verify-input {
             display: flex;
@@ -203,11 +213,12 @@
             border: 1px solid #e5e7eb;
             border-radius: 0.5rem;
             background: white;
+            color: #111827;
         }
         body.dark .verify-input input {
             background: #1a1a1a;
             border-color: #374151;
-            color: white;
+            color: #e5e7eb;
         }
         .verify-input button {
             background: #10b981;
@@ -241,7 +252,6 @@
             <div class="nav">
                 <a href="#verify">Verify</a>
                 <a href="#docs">Docs</a>
-                <a href="#pricing">Pricing</a>
                 <a href="#contact">Contact</a>
                 <a href="https://github.com/notarveri/notarveri" target="_blank">GitHub</a>
                 <button class="theme-toggle" id="themeToggle">🌙</button>
@@ -309,23 +319,6 @@
             </div>
         </div>
 
-        <div id="pricing" class="card">
-            <h2>💸 Enterprise‑Grade Pricing</h2>
-            <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1rem;">
-                <div style="flex: 1; background: #f9fafb; padding: 1.5rem; border-radius: 1rem;">
-                    <h3>Standard</h3>
-                    <p class="stat-number" style="font-size: 2rem;">$0</p>
-                    <p>1,000 receipts/month, unlimited verification, community support.</p>
-                </div>
-                <div style="flex: 1; background: linear-gradient(135deg, #10b98110, #3b82f610); padding: 1.5rem; border-radius: 1rem; border: 1px solid #10b981;">
-                    <h3>Premium</h3>
-                    <p class="stat-number" style="font-size: 2rem;">Custom</p>
-                    <p>Unlimited receipts, 99.99% SLA, on‑prem/GovCloud, compliance reports, 24/7 support.</p>
-                    <a href="#contact" class="btn btn-outline" style="margin-top: 1rem;">Request Quote</a>
-                </div>
-            </div>
-        </div>
-
         <div id="contact" class="card">
             <h2>📞 Talk to Us</h2>
             <p>For enterprise, government, or high‑volume deployments.</p>
@@ -334,7 +327,7 @@
                 <textarea name="message" placeholder="Your needs (volume, deployment type)" rows="3" style="padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;"></textarea>
                 <button type="submit" class="btn btn-primary" style="width: fit-content;">Send Inquiry</button>
             </form>
-            <p style="margin-top: 1rem; font-size: 0.875rem;">Or directly email <a href="mailto:sales.notarveri@gmail.com">sales.notarveri@gmail.com</a></p>
+            <p style="margin-top: 1rem; font-size: 0.875rem;">Or directly email <a href="mailto:sales@notarveri.com">sales@notarveri.com</a></p>
         </div>
 
         <footer>
@@ -343,15 +336,24 @@
     </div>
 
     <script>
-        // Dark mode
+        // Default to light mode (no dark class added unless explicitly set)
         const themeToggle = document.getElementById('themeToggle');
-        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark');
+            themeToggle.textContent = '☀️';
+        } else {
+            // ensure light mode (default)
+            document.body.classList.remove('dark');
+            themeToggle.textContent = '🌙';
+        }
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark');
-            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
         });
 
-        // Verify
+        // Verify receipt
         document.getElementById('verifyBtn').addEventListener('click', async () => {
             const hash = document.getElementById('requestHash').value.trim();
             if (!hash) return;
