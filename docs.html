@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotarVeri API Reference</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0a0a0a;
+    }
+    .topbar {
+      background: #111;
+      padding: 10px 20px;
+      color: #10b981;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border-bottom: 1px solid #1f2937;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">NotarVeri Registry – API Reference</div>
+  <div id="swagger-ui"></div>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    const spec = {
+      openapi: '3.0.0',
+      info: { title: 'NotarVeri API', version: '1.0.0' },
+      servers: [{ url: 'https://project-drm42.vercel.app' }],
+      paths: {
+        '/api/attest': { post: { summary: 'Attest an AI output' } },
+        '/api/registry': { get: { summary: 'Chain info' }, post: { summary: 'Register, verify, proof' } },
+        '/api/health': { get: { summary: 'Health check' } }
+      }
+    };
+    SwaggerUIBundle({
+      spec: spec,
+      dom_id: '#swagger-ui',
+      presets: [SwaggerUIBundle.presets.apis],
+      layout: 'BaseLayout'
+    });
+  </script>
+</body>
+</html>
