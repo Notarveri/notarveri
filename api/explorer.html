@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotarVeri Blockchain Explorer</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; }
+        body {
+            font-family: 'Inter', system-ui, monospace;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            padding: 1rem;
+        }
+        body.light {
+            background: #f5f5f7;
+            color: #111;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #2a2a2a;
+            padding-bottom: 1rem;
+        }
+        body.light .header { border-bottom-color: #ddd; }
+        h1 { background: linear-gradient(135deg, #10b981, #3b82f6); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .search {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .search input {
+            flex: 1;
+            padding: 0.5rem;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #0f0;
+            border-radius: 0.5rem;
+        }
+        body.light .search input {
+            background: white;
+            border-color: #ccc;
+            color: #111;
+        }
+        .search button {
+            background: #10b981;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+        }
+        .stats {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        .stat-card {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            min-width: 150px;
+        }
+        body.light .stat-card { background: white; border-color: #ddd; }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #10b981; }
+        .blocks-list, .receipts-list {
+            margin-top: 2rem;
+        }
+        .block-item {
+            background: #111;
+            border-left: 4px solid #10b981;
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        body.light .block-item { background: white; }
+        .block-item:hover { background: #1a1a1a; }
+        body.light .block-item:hover { background: #e0e0e0; }
+        .receipt-item {
+            border-bottom: 1px solid #2a2a2a;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        button {
+            background: #10b981;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            max-width: 80%;
+            max-height: 80%;
+            overflow: auto;
+        }
+        body.light .modal-content { background: white; }
+        .close { float: right; cursor: pointer; font-size: 1.5rem; }
+        @media (max-width: 768px) {
+            .stat-card { min-width: 100px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🔗 NotarVeri Blockchain Explorer</h1>
+        <div><button id="themeToggle">🌙 Dark</button></div>
+    </div>
+    <div class="search">
+        <input type="text" id="searchInput" placeholder="Search by receipt hash or block hash...">
+        <button id="searchBtn">Search</button>
+    </div>
+    <div class="stats" id="chainStats">Loading chain info...</div>
+
+    <div class="blocks-list">
+        <h2>📦 Recent Blocks</h2>
+        <div id="blocksContainer">Loading...</div>
+        <div class="pagination" id="blocksPagination"></div>
+    </div>
+
+    <div class="receipts-list">
+        <h2>📝 Latest Receipts</h2>
+        <div id="receiptsContainer">Loading...</div>
+        <div class="pagination" id="receiptsPagination"></div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = '/api/registry?action=';
+    let currentBlocksPage = 0;
+    let currentReceiptsPage = 0;
+    const limit = 20;
+
+    // Theme
+    const themeToggle = document.getElementById('themeToggle');
+    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light');
+        localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    });
+
+    async function fetchChain() {
+        const res = await fetch(API_BASE + 'chain');
+        return res.json();
+    }
+
+    async function fetchBlocks(offset) {
+        const res = await fetch(`${API_BASE}blocks&limit=${limit}&offset=${offset}`);
+        return res.json();
+    }
+
+    async function fetchReceipts(offset) {
+        const res = await fetch(`${API_BASE}receipts&limit=${limit}&offset=${offset}`);
+        return res.json();
+    }
+
+    async function search(query) {
+        const res = await fetch(API_BASE + `verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ request_hash: query })
+        });
+        const data = await res.json();
+        if (data.found) {
+            alert(`Receipt found!\n${JSON.stringify(data.receipt, null, 2)}`);
+        } else {
+            alert('Not found. Try block hash? (block search not implemented)');
+        }
+    }
+
+    async function updateChainStats() {
+        const chain = await fetchChain();
+        document.getElementById('chainStats').innerHTML = `
+            <div class="stat-card"><div class="stat-number">${chain.chain_height}</div><div>Total Blocks</div></div>
+            <div class="stat-card"><div class="stat-number">${chain.latest_block_hash ? chain.latest_block_hash.slice(0,16)+'…' : '—'}</div><div>Latest Block</div></div>
+            <div class="stat-card"><div class="stat-number">${chain.genesis ? 'Yes' : 'No'}</div><div>Genesis</div></div>
+        `;
+    }
+
+    async function renderBlocks(offset) {
+        const data = await fetchBlocks(offset);
+        const blocks = data.blocks || [];
+        const total = data.total || 0;
+        document.getElementById('blocksContainer').innerHTML = blocks.map(block => `
+            <div class="block-item" onclick="showBlockReceipts(${block.block_height}, '${block.block_hash}')">
+                <strong>Block #${block.block_height}</strong> – ${block.block_hash.slice(0,16)}…<br>
+                ${block.receipt_count} receipts | ${new Date(block.timestamp_start*1000).toLocaleString()}
+                ${block.solana_tx ? `<br>🔗 <a href="https://explorer.solana.com/tx/${block.solana_tx}" target="_blank" onclick="event.stopPropagation()">Solana TX</a>` : ''}
+            </div>
+        `).join('');
+        const totalPages = Math.ceil(total / limit);
+        document.getElementById('blocksPagination').innerHTML = `
+            <button onclick="changeBlocksPage(-1)" ${offset===0?'disabled':''}>Prev</button>
+            <span>Page ${offset/limit+1} / ${totalPages}</span>
+            <button onclick="changeBlocksPage(1)" ${offset+limit>=total?'disabled':''}>Next</button>
+        `;
+    }
+
+    async function renderReceipts(offset) {
+        const data = await fetchReceipts(offset);
+        const receipts = data.receipts || [];
+        const total = data.total || 0;
+        document.getElementById('receiptsContainer').innerHTML = receipts.map(r => `
+            <div class="receipt-item">
+                <strong>Request:</strong> ${r.receipt_json.request_hash?.slice(0,24)}…<br>
+                Model: ${r.receipt_json.model} | Block ID: ${r.block_id} | Position: ${r.position}
+            </div>
+        `).join('');
+        const totalPages = Math.ceil(total / limit);
+        document.getElementById('receiptsPagination').innerHTML = `
+            <button onclick="changeReceiptsPage(-1)" ${offset===0?'disabled':''}>Prev</button>
+            <span>Page ${offset/limit+1} / ${totalPages}</span>
+            <button onclick="changeReceiptsPage(1)" ${offset+limit>=total?'disabled':''}>Next</button>
+        `;
+    }
+
+    window.changeBlocksPage = (delta) => {
+        const newOffset = currentBlocksPage + delta * limit;
+        if (newOffset >= 0) {
+            currentBlocksPage = newOffset;
+            renderBlocks(currentBlocksPage);
+        }
+    };
+    window.changeReceiptsPage = (delta) => {
+        const newOffset = currentReceiptsPage + delta * limit;
+        if (newOffset >= 0) {
+            currentReceiptsPage = newOffset;
+            renderReceipts(currentReceiptsPage);
+        }
+    };
+    window.showBlockReceipts = async (height, hash) => {
+        // Fetch all receipts for that block (you need a block_receipts endpoint – optional)
+        alert(`Block ${height} details:\nHash: ${hash}\nReceipts list not implemented. Use /api/registry?action=proof with receipt hash.`);
+    };
+    document.getElementById('searchBtn').onclick = () => {
+        const query = document.getElementById('searchInput').value.trim();
+        if (query) search(query);
+    };
+
+    updateChainStats();
+    renderBlocks(0);
+    renderReceipts(0);
+    setInterval(() => { updateChainStats(); renderBlocks(currentBlocksPage); renderReceipts(currentReceiptsPage); }, 15000);
+</script>
+</body>
+</html>
