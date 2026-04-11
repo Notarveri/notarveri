@@ -1,12 +1,71 @@
-// api/docs.js – Swagger UI with dark/light mode, API key management, closable panel
 export default async function handler(req, res) {
+  const spec = {
+    openapi: '3.0.0',
+    info: {
+      title: 'NotarVeri Registry API',
+      description: 'Public, immutable, Merkle‑tree‑based audit log for AI outputs. Compliant with EU AI Act Article 12.',
+      version: '2.0.0',
+      contact: { name: 'Notar', email: 'notarveri@proton.me' }
+    },
+    servers: [{ url: 'https://project-drm42.vercel.app', description: 'Production server' }],
+    components: {
+      securitySchemes: {
+        ApiKeyAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'Authorization',
+          description: 'Bearer your-api-key-here'
+        }
+      }
+    },
+    security: [{ ApiKeyAuth: [] }],
+    paths: {
+      '/api/attest': {
+        post: {
+          summary: 'Attest an AI output',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['prompt', 'output', 'model'],
+                  properties: {
+                    prompt: { type: 'string' },
+                    output: { type: 'string' },
+                    model: { type: 'string' }
+                  }
+                }
+              }
+            }
+          },
+          responses: { 200: { description: 'Receipt created' } }
+        }
+      },
+      '/api/registry': {
+        get: {
+          summary: 'Get chain info',
+          parameters: [{ name: 'action', in: 'query', required: true, schema: { type: 'string', enum: ['chain'] } }],
+          responses: { 200: { description: 'Chain information' } }
+        },
+        post: {
+          summary: 'Registry actions (register, verify, proof)',
+          parameters: [{ name: 'action', in: 'query', required: true, schema: { type: 'string', enum: ['register', 'verify', 'proof'] } }],
+          responses: { 200: { description: 'Result' } }
+        }
+      },
+      '/api/health': {
+        get: { responses: { 200: { description: 'OK' } } }
+      }
+    }
+  };
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NotarVeri API Reference</title>
-  <link rel="icon" type="image/png" href="https://vercel.com/favicon.ico">
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
   <style>
     :root {
@@ -30,7 +89,7 @@ export default async function handler(req, res) {
       transition: background 0.2s, color 0.2s;
     }
     .topbar {
-      background-color: var(--secondary-bg) !important;
+      background-color: var(--secondary-bg);
       border-bottom: 1px solid var(--border-color);
       padding: 0.5rem 1rem;
       display: flex;
@@ -53,26 +112,6 @@ export default async function handler(req, res) {
       cursor: pointer;
       font-size: 0.9rem;
     }
-    .swagger-ui .info .title {
-      color: var(--text-color) !important;
-    }
-    .swagger-ui .info .description {
-      color: var(--text-color) !important;
-    }
-    .swagger-ui .opblock-tag {
-      color: var(--text-color) !important;
-    }
-    .swagger-ui .opblock .opblock-summary-method {
-      background: var(--primary-color) !important;
-    }
-    .swagger-ui .btn.authorize {
-      border-color: var(--primary-color) !important;
-      color: var(--primary-color) !important;
-    }
-    .swagger-ui section.models {
-      background: var(--secondary-bg) !important;
-      border-color: var(--border-color) !important;
-    }
     .api-key-panel {
       position: fixed;
       bottom: 20px;
@@ -93,9 +132,6 @@ export default async function handler(req, res) {
       right: 8px;
       cursor: pointer;
       font-size: 16px;
-      color: var(--text-color);
-      background: none;
-      border: none;
     }
     .api-key-panel input {
       width: 100%;
@@ -125,13 +161,16 @@ export default async function handler(req, res) {
     <div class="logo">NotarVeri Registry</div>
     <div>
       <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
-      <a href="/api/openapi.json" download="notarveri-openapi.json" style="margin-left: 1rem; color: var(--primary-color);">📥 Download OpenAPI Spec</a>
+      <button id="downloadSpec" class="theme-toggle" style="margin-left: 1rem;">📥 Download OpenAPI Spec</button>
     </div>
   </div>
   <div id="swagger-ui"></div>
   <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
   <script>
+    const spec = ${JSON.stringify(spec)};
+
+    // Theme
     const themeToggle = document.getElementById('themeToggle');
     const setTheme = (isDark) => {
       if (isDark) {
@@ -144,59 +183,57 @@ export default async function handler(req, res) {
         localStorage.setItem('theme', 'light');
       }
     };
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') setTheme(true);
-    themeToggle.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('dark');
-      setTheme(isDark);
+    if (localStorage.getItem('theme') === 'dark') setTheme(true);
+    themeToggle.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+
+    // Download spec
+    document.getElementById('downloadSpec').addEventListener('click', () => {
+      const dataStr = JSON.stringify(spec, null, 2);
+      const blob = new Blob([dataStr], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'notarveri-openapi.json';
+      a.click();
+      URL.revokeObjectURL(url);
     });
 
+    // Swagger UI
     window.ui = SwaggerUIBundle({
-      url: '/api/openapi.json',
+      spec: spec,
       dom_id: '#swagger-ui',
       presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
       layout: 'BaseLayout',
       deepLinking: true,
-      defaultModelsExpandDepth: 1,
-      defaultModelExpandDepth: 1,
-      displayOperationId: false,
-      filter: true,
       tryItOutEnabled: true,
       requestInterceptor: (req) => {
         const storedKey = localStorage.getItem('notarveri_api_key');
-        if (storedKey) {
-          req.headers['Authorization'] = `Bearer ${storedKey}`;
-        }
+        if (storedKey) req.headers['Authorization'] = `Bearer ${storedKey}`;
         return req;
-      },
-      responseInterceptor: (res) => {
-        console.log('Response:', res);
-        return res;
       }
     });
 
+    // API key panel
     const addApiKeyPanel = () => {
       const panel = document.createElement('div');
       panel.className = 'api-key-panel';
       panel.innerHTML = \`
         <button class="close-panel">&times;</button>
         <div style="font-weight:bold; margin-bottom:8px;">🔑 API Key</div>
-        <input type="password" id="apiKeyInput" placeholder="Your API key (Bearer token)" value="\${localStorage.getItem('notarveri_api_key') || ''}">
+        <input type="password" id="apiKeyInput" placeholder="Your API key" value="\${localStorage.getItem('notarveri_api_key') || ''}">
         <button id="saveApiKey">Save</button>
         <button id="clearApiKey" class="clear-btn">Clear</button>
       \`;
       document.body.appendChild(panel);
-      document.querySelector('.close-panel').addEventListener('click', () => {
-        panel.remove();
-      });
-      document.getElementById('saveApiKey').addEventListener('click', () => {
-        const key = document.getElementById('apiKeyInput').value;
+      panel.querySelector('.close-panel').addEventListener('click', () => panel.remove());
+      panel.querySelector('#saveApiKey').addEventListener('click', () => {
+        const key = panel.querySelector('#apiKeyInput').value;
         localStorage.setItem('notarveri_api_key', key);
-        alert('API key saved. Reload page or try an endpoint.');
+        alert('API key saved. Refresh page to apply.');
       });
-      document.getElementById('clearApiKey').addEventListener('click', () => {
+      panel.querySelector('#clearApiKey').addEventListener('click', () => {
         localStorage.removeItem('notarveri_api_key');
-        document.getElementById('apiKeyInput').value = '';
+        panel.querySelector('#apiKeyInput').value = '';
         alert('API key cleared.');
       });
     };
@@ -204,6 +241,7 @@ export default async function handler(req, res) {
   </script>
 </body>
 </html>`;
+
   res.setHeader('Content-Type', 'text/html');
   res.status(200).send(html);
 }
