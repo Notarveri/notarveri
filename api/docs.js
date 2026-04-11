@@ -1,9 +1,6 @@
-// api/docs.js – Swagger UI with dark/light mode and advanced features
+// api/docs.js – Swagger UI with dark/light mode, API key management, and closable panel
 
 export default async function handler(req, res) {
-  // Optional: protect the docs with a simple API key? Not needed for now.
-  // You can add IP whitelist or query param check here if desired.
-
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,9 +8,7 @@ export default async function handler(req, res) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NotarVeri API Reference</title>
   <link rel="icon" type="image/png" href="https://vercel.com/favicon.ico">
-  <!-- Swagger UI CSS -->
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
-  <!-- Custom theme -->
   <style>
     :root {
       --bg-color: #ffffff;
@@ -79,6 +74,52 @@ export default async function handler(req, res) {
       background: var(--secondary-bg) !important;
       border-color: var(--border-color) !important;
     }
+    /* Floating panel */
+    .api-key-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--secondary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      z-index: 1000;
+      font-size: 12px;
+      font-family: monospace;
+      width: 260px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .api-key-panel .close-panel {
+      position: absolute;
+      top: 4px;
+      right: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-color);
+      background: none;
+      border: none;
+    }
+    .api-key-panel input {
+      width: 100%;
+      padding: 4px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .api-key-panel button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      margin-right: 4px;
+    }
+    .api-key-panel .clear-btn {
+      background: #ef4444;
+    }
   </style>
 </head>
 <body>
@@ -86,7 +127,7 @@ export default async function handler(req, res) {
     <div class="logo">NotarVeri Registry</div>
     <div>
       <button id="themeToggle" class="theme-toggle">🌙 Dark</button>
-      <a href="/api/openapi.json" download="notarveri-openapi.json" style="margin-left: 1rem; color: var(--primary-color);">📥 Download OpenAPI Spec</a>
+      <a href="/api/openapi" download="notarveri-openapi.json" style="margin-left: 1rem; color: var(--primary-color);">📥 Download OpenAPI Spec</a>
     </div>
   </div>
   <div id="swagger-ui"></div>
@@ -113,10 +154,9 @@ export default async function handler(req, res) {
       setTheme(isDark);
     });
 
-    // API key interceptor – allows "Try it out" with Bearer token
-    const apiKey = localStorage.getItem('notarveri_api_key') || '';
+    // API key interceptor
     window.ui = SwaggerUIBundle({
-      url: '/api/openapi.json',
+      url: '/api/openapi',
       dom_id: '#swagger-ui',
       presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
       layout: 'BaseLayout',
@@ -127,62 +167,34 @@ export default async function handler(req, res) {
       filter: true,
       tryItOutEnabled: true,
       requestInterceptor: (req) => {
-        // Inject API key from localStorage if available
         const storedKey = localStorage.getItem('notarveri_api_key');
         if (storedKey) {
-          req.headers['Authorization'] = \`Bearer \${storedKey}\`;
+          req.headers['Authorization'] = `Bearer ${storedKey}`;
         }
         return req;
       },
       responseInterceptor: (res) => {
         console.log('Response:', res);
         return res;
-      },
-      plugins: [
-        // Custom plugin to add "Copy cURL" button and code samples
-        () => ({
-          statePlugins: {
-            spec: {
-              wrapActions: {
-                updateSpec: (ori, action) => (spec) => {
-                  // You can add additional transforms here
-                  return ori(spec);
-                }
-              }
-            }
-          },
-          components: {
-            operation: (Original) => (props) => {
-              // Enhance operation with copy cURL and language samples
-              const originalElement = React.createElement(Original, props);
-              // Simple enhancement – we'll rely on Swagger UI's built-in "Copy" feature
-              return originalElement;
-            }
-          }
-        })
-      ]
+      }
     });
 
-    // Add API key management panel
+    // Add closable API key panel
     const addApiKeyPanel = () => {
       const panel = document.createElement('div');
-      panel.style.position = 'fixed';
-      panel.style.bottom = '20px';
-      panel.style.right = '20px';
-      panel.style.backgroundColor = 'var(--secondary-bg)';
-      panel.style.border = '1px solid var(--border-color)';
-      panel.style.borderRadius = '8px';
-      panel.style.padding = '12px';
-      panel.style.zIndex = '1000';
-      panel.style.fontSize = '12px';
-      panel.style.fontFamily = 'monospace';
+      panel.className = 'api-key-panel';
       panel.innerHTML = \`
+        <button class="close-panel">&times;</button>
         <div style="font-weight:bold; margin-bottom:8px;">🔑 API Key</div>
-        <input type="password" id="apiKeyInput" placeholder="Bearer token" style="width:100%; padding:4px; background:var(--bg-color); color:var(--text-color); border:1px solid var(--border-color); border-radius:4px;" value="\${localStorage.getItem('notarveri_api_key') || ''}">
-        <button id="saveApiKey" style="margin-top:8px; background:#10b981; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">Save</button>
-        <button id="clearApiKey" style="margin-left:8px; background:#ef4444; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">Clear</button>
+        <input type="password" id="apiKeyInput" placeholder="Your API key (Bearer token)" value="\${localStorage.getItem('notarveri_api_key') || ''}">
+        <button id="saveApiKey">Save</button>
+        <button id="clearApiKey" class="clear-btn">Clear</button>
       \`;
       document.body.appendChild(panel);
+
+      document.querySelector('.close-panel').addEventListener('click', () => {
+        panel.remove();
+      });
       document.getElementById('saveApiKey').addEventListener('click', () => {
         const key = document.getElementById('apiKeyInput').value;
         localStorage.setItem('notarveri_api_key', key);
@@ -194,12 +206,10 @@ export default async function handler(req, res) {
         alert('API key cleared.');
       });
     };
-    // Wait for DOM
     setTimeout(addApiKeyPanel, 1000);
   </script>
 </body>
 </html>`;
-
   res.setHeader('Content-Type', 'text/html');
   res.status(200).send(html);
 }
