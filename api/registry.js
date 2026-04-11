@@ -392,6 +392,44 @@ if (action === 'receipts') {
     return res.status(500).json({ error: err.message });
   }
 }
+
+// ==================== BLOCKS (paginated) ====================
+if (action === 'blocks') {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  const limit = parseInt(url.searchParams.get('limit') || '20', 10);
+  const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+  const sup = getSupabase();
+  try {
+    const { data, error, count } = await sup
+      .from('blocks')
+      .select('*', { count: 'exact' })
+      .order('block_height', { ascending: false })
+      .range(offset, offset + limit - 1);
+    if (error) throw error;
+    return res.status(200).json({ blocks: data, total: count, offset, limit });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+// ==================== RECEIPTS (paginated) ====================
+if (action === 'receipts') {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  const limit = parseInt(url.searchParams.get('limit') || '20', 10);
+  const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+  const sup = getSupabase();
+  try {
+    const { data, error, count } = await sup
+      .from('receipts_in_block')
+      .select('receipt_json, block_id, position, created_at', { count: 'exact' })
+      .order('id', { ascending: false })
+      .range(offset, offset + limit - 1);
+    if (error) throw error;
+    return res.status(200).json({ receipts: data, total: count, offset, limit });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
   
   // ==================== FLUSH (secure, for cron) ====================
   if (action === 'flush') {
