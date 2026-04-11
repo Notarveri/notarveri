@@ -4,6 +4,7 @@
 // ============================================================
 import { createHash, createHmac, timingSafeEqual } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+import { Connection, PublicKey, Keypair, LAMPORTS_PER_SOL, Transaction, SystemProgram } from '@solana/web3.js';
 
 // ============================================================
 // ENVIRONMENT (fail fast if missing)
