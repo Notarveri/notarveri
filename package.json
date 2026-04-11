@@ -3,7 +3,8 @@
   "version": "3.0.0",
   "type": "module",
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0"
+    "@supabase/supabase-js": "^2.39.0",
+    "@solana/web3.js": "^1.95.0"
   },
   "engines": {
     "node": "24.x"
