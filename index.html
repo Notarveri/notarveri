@@ -150,31 +150,6 @@
         body.dark .trust-item {
             color: #9ca3af;
         }
-        /* Stats grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 3rem 0;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e5e7eb;
-        }
-        body.dark .stat-card {
-            background: #111;
-            border-color: #1f2937;
-        }
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            font-family: monospace;
-            color: #10b981;
-        }
         /* Cards */
         .card {
             background: white;
@@ -264,7 +239,6 @@
         <header>
             <div class="logo">NotarVeri</div>
             <div class="nav">
-                <a href="#stats">Registry</a>
                 <a href="#verify">Verify</a>
                 <a href="#docs">Docs</a>
                 <a href="#pricing">Pricing</a>
@@ -278,7 +252,7 @@
             <h1>Immutable AI Audit Log<br>for Enterprise & Regulators</h1>
             <p>Neutral, public, Merkle‑tree registry for AI output attestations.<br>EU AI Act ready. On‑prem available.</p>
             <div class="btn-group">
-                <a href="/api/auth/signup" class="btn btn-primary">Get API Key →</a>
+                <a href="mailto:notarveri@proton.me?subject=API%20Key%20Request" class="btn btn-primary">Get API Key →</a>
                 <a href="#contact" class="btn btn-outline">Contact Sales</a>
             </div>
         </section>
@@ -288,16 +262,6 @@
             <span class="trust-item">✓ Open Source Verifier</span>
             <span class="trust-item">✓ Public Merkle Proofs</span>
             <span class="trust-item">✓ SOC2 Type II (Q3 2026)</span>
-        </div>
-
-        <div id="stats">
-            <h2 style="margin-bottom: 1rem;">📊 Live Registry Status</h2>
-            <div class="stats-grid" id="chainStats">
-                <div class="stat-card"><div class="stat-number" id="chainHeight">—</div><div>Blocks</div></div>
-                <div class="stat-card"><div class="stat-number" id="latestBlock">—</div><div>Latest Block Hash</div></div>
-                <div class="stat-card"><div class="stat-number" id="genesis">—</div><div>Genesis Block</div></div>
-                <div class="stat-card"><div class="stat-number"><span style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:50%;margin-right:6px;"></span>Operational</div><div>Uptime 99.99%</div></div>
-            </div>
         </div>
 
         <div id="verify" class="card">
@@ -386,18 +350,6 @@
             document.body.classList.toggle('dark');
             localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
         });
-
-        // Fetch chain stats
-        async function fetchChain() {
-            try {
-                const res = await fetch('/api/registry?action=chain');
-                const data = await res.json();
-                document.getElementById('chainHeight').innerText = data.chain_height ?? 0;
-                document.getElementById('latestBlock').innerText = data.latest_block_hash ? data.latest_block_hash.slice(0,16)+'…' : '—';
-                document.getElementById('genesis').innerText = data.genesis ? 'Yes' : 'No';
-            } catch(e) {}
-        }
-        fetchChain(); setInterval(fetchChain, 10000);
 
         // Verify
         document.getElementById('verifyBtn').addEventListener('click', async () => {
