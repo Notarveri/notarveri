@@ -309,6 +309,42 @@ export default async function handler(req, res) {
     }
   }
 
+// ==================== BLOCKS (list recent blocks) ====================
+if (action === 'blocks') {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  const limit = parseInt(url.searchParams.get('limit') || '10', 10);
+  const sup = getSupabase();
+  try {
+    const { data, error } = await sup
+      .from('blocks')
+      .select('*')
+      .order('block_height', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return res.status(200).json({ blocks: data });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+// ==================== RECEIPTS (list recent receipts) ====================
+if (action === 'receipts') {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  const limit = parseInt(url.searchParams.get('limit') || '20', 10);
+  const sup = getSupabase();
+  try {
+    const { data, error } = await sup
+      .from('receipts_in_block')
+      .select('receipt_json, block_id, position, created_at')
+      .order('id', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return res.status(200).json({ receipts: data });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
+  
   // ==================== FLUSH (secure, for cron) ====================
   if (action === 'flush') {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
